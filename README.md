@@ -18,7 +18,7 @@ The better way to solve this:
 
 When you use `gcloud compute instances attach-disk`, or you call the `attachDisk` method on the Compute API directly or via one of the SDKs, I recommend you specify the `device-name` too and set it to the disk’s name [[2](https://unix.stackexchange.com/questions/14165/list-partition-labels-from-the-command-line)].
 
-```
+```bash
 DISK=mydisk
 
 gcloud compute instances attach-disk ${INSTANCE} \
@@ -29,4 +29,12 @@ gcloud compute instances attach-disk ${INSTANCE} \
 ```
 
 Then you can use `ls -l /dev/disk/by-id` to find the mapping.
+
+## List permission differences betwenn 2 IAM roles
+
+Cloud IAM is import for security. Follow principle of least privilege when binding roles to identity. But figure out the differences between 2 IAM roles is non-trivial. Below is the shortcut command to visualize the differences.
+
+```bash
+vimdiff <(gcloud iam roles describe roles/bigquery.dataEditor --format=json | jq -S '.includedPermissions') <(gcloud iam roles describe roles/bigquery.user --format=json | jq -S '.includedPermissions')
+```
 
