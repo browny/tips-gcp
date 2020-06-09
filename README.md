@@ -1,5 +1,5 @@
 
-# Subtle GCP
+# Tips of GCP
 
 ## How to identify the disks you mount on the GCE instance?
 
