@@ -54,3 +54,27 @@ Cloud IAM is import for security. Follow principle of least privilege when bindi
 vimdiff <(gcloud iam roles describe roles/bigquery.dataEditor --format=json | jq -S '.includedPermissions') <(gcloud iam roles describe roles/bigquery.user --format=json | jq -S '.includedPermissions')
 ```
 
+## Set notification channels of alerting policy (#Monitoring)
+
+It is very tedious when you want to set lots of notification channels for some alert policy. Becuase there are no `group` concept in the notification channel design. Setting one by one through Cloud Console is killing, below are gcloud commands to rescue.
+
+1. Get familar with this two objects
+
+   https://cloud.google.com/sdk/gcloud/reference/beta/monitoring/channels
+   https://cloud.google.com/sdk/gcloud/reference/alpha/monitoring/policies
+
+2. Use user label of  `channel` to do grouping
+
+   ```bash
+   gcloud beta monitoring channels update CHANNEL --update-user-labels team=a,level=1
+   gcloud beta monitoring channels list --filter='type="sms" AND userLabels.team="a"' --format='list(name)'
+   ```
+
+3. Bind all channels filtered by the specified user labels to the policy
+
+   ```bash
+   gcloud alpha monitoring policies update ALERT_POLICY --set-notification-channels \
+   $(gcloud beta monitoring channels list --filter='type="sms" AND userLabels.team="a"' --format='value[terminator=","](name)')
+   ```
+
+
